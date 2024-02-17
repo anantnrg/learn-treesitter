@@ -51,7 +51,8 @@ fn main() {
         }
     };
 
-    let scope = get_scope(0);
-
-    println!("{:?}", scope);
+    for (offset, char) in rope.chars().enumerate() {
+        let scope = get_scope(offset);
+        println!("{:?}", scope);
+    }
 }
