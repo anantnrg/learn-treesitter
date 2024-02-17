@@ -1,3 +1,7 @@
 fn main() {
-    println!("Hello, world!");
+    let code = r#"fn main() {
+    println!("hello world");
+}"#;
+
+    println!("{code}");
 }
