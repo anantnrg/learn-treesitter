@@ -19,11 +19,8 @@ fn main() {
     let tree = parser
         .parse_with(
             &mut |byte: usize, _position: Point| -> &[u8] {
-                if byte < rope.len_bytes() {
-                    rope.slice(byte..).as_str().unwrap().as_bytes()
-                } else {
-                    &[]
-                }
+                let (chunk, chunk_byte_idx, _, _) = rope.chunk_at_byte(byte);
+                &chunk.as_bytes()[byte - chunk_byte_idx..]
             },
             None,
         )
@@ -31,7 +28,30 @@ fn main() {
 
     let query = Query::new(language(), HIGHLIGHTS).unwrap();
     let mut cursor = QueryCursor::new();
-    let matches = cursor.captures(&query, tree.root_node(), code.as_bytes());
+    let mut matches = cursor
+        .matches(&query, tree.root_node(), code.as_bytes())
+        .peekable();
 
-    println!("{:?}", tree.root_node());
+    let mut get_scope = |index: usize| loop {
+        let query_match = matches.peek().unwrap();
+
+        if query_match.captures.is_empty() {
+            matches.next();
+            continue;
+        }
+        let capture = query_match.captures[0];
+        let capture_range = capture.node.byte_range();
+        if index < capture_range.start {
+            return None;
+        } else if index < capture_range.end {
+            return Some(query.capture_names()[usize::try_from(capture.index).unwrap()].as_str());
+        } else {
+            matches.next();
+            continue;
+        }
+    };
+
+    let scope = get_scope(0);
+
+    println!("{:?}", scope);
 }
