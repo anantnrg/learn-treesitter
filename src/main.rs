@@ -1,6 +1,8 @@
 use tree_sitter::{Parser, Point};
 use tree_sitter_rust::language;
 
+const HIGHLIGHTS: &'static str = include_str!("rust.scm");
+
 fn main() {
     // Initialize source
     let code = r#"fn main() {
