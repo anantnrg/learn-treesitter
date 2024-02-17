@@ -16,7 +16,7 @@ fn main() {
 
     let tree = parser
         .parse_with(
-            &mut |byte: usize, position: Point| -> &[u8] {
+            &mut |byte: usize, _position: Point| -> &[u8] {
                 if byte < rope.len_bytes() {
                     rope.slice(byte..).as_str().unwrap().as_bytes()
                 } else {
