@@ -1,4 +1,4 @@
-use tree_sitter::{Parser, Point};
+use tree_sitter::{Parser, Point, Query, QueryCursor};
 use tree_sitter_rust::language;
 
 const HIGHLIGHTS: &'static str = include_str!("rust.scm");
@@ -28,6 +28,10 @@ fn main() {
             None,
         )
         .unwrap();
+
+    let query = Query::new(language(), HIGHLIGHTS).unwrap();
+    let mut cursor = QueryCursor::new();
+    let matches = cursor.captures(&query, tree.root_node(), code.as_bytes());
 
     println!("{:?}", tree.root_node());
 }
